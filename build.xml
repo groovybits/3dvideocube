@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="ckCube" default="release" basedir=".">
+<taskdef resource="flexTasks.tasks" classpath="/opt/FlexSDK/ant/lib/flexTasks.jar"/>
+<property name="FLEX_HOME" value="/opt/FlexSDK"/>
+<property name="APP_ROOT" value="."/>
+<property name="PROG_NAME" value="ckCube.swf"/>
+<property name="DEPLOY_DIR" value="../bin-release"/>
+<property name="DEBUG_DIR" value="../bin-debug"/>
+<property name="WWW_DIR" value="/var/www/VW"/>
+    <macrodef name="compile-ckCube">
+        <attribute name="binary" />
+        <attribute name="commercial" />
+        <attribute name="free" />
+        <attribute name="debug" />
+        <attribute name="dir" />
+        <sequential>
+                <echo message="Building binary @{binary}" />
+                <exec executable="${FLEX_HOME}/bin/mxmlc">
+                        <arg line="-target-player=10" />
+                        <arg line="-metadata.creator='Chris Kennedy'" />
+                        <arg line="-metadata.title='ckCube'" />
+                        <arg line="-strict=true" />
+                        <arg line="-warnings" />
+                        <arg line="-use-network" />
+                        <arg line="@{debug}" />
+                        <arg line="-file-specs 'client.as'" />
+                        <arg line="-output '@{dir}/@{binary}'"/>
+                </exec>            
+        </sequential>
+    </macrodef>
+    <macrodef name="compile-ckCubeLib">
+        <attribute name="binary" />
+        <attribute name="commercial" />
+        <attribute name="free" />
+        <attribute name="debug" />
+        <attribute name="dir" />
+        <sequential>
+                <echo message="Building binary @{binary}" />
+                <exec executable="${FLEX_HOME}/bin/compc">
+                        <arg line="-target-player=10" />
+                        <arg line="-metadata.creator='Chris Kennedy'" />
+                        <arg line="-metadata.title='ckCube'" />
+                        <arg line="-strict=true" />
+                        <arg line="-warnings" />
+                        <arg line="-use-network" />
+                        <arg line="@{debug}" />
+                        <arg line="-include-classes=ckCube" />
+                        <arg line="-source-path='.'" />
+                        <arg line="-output '@{dir}/@{binary}'"/>
+                </exec>            
+        </sequential>
+    </macrodef>
+<target name="debug">
+        <compile-ckCubeLib binary="ckCube.swc" commercial="true" 
+                free="false" debug="-compiler.debug" dir="${DEBUG_DIR}"/>
+        <compile-ckCube binary="${PROG_NAME}" commercial="true" 
+                free="false" debug="-compiler.debug" dir="${DEBUG_DIR}"/>
+        <copy file="${DEBUG_DIR}/${PROG_NAME}" tofile="${WWW_DIR}/${PROG_NAME}" />
+</target>
+<target name="release">
+        <compile-ckCubeLib binary="ckCube.swc" commercial="true" 
+                free="false" debug="-compiler.optimize" dir="${DEPLOY_DIR}"/>
+        <compile-ckCube binary="${PROG_NAME}" commercial="true" 
+                free="false" debug="-compiler.optimize" dir="${DEPLOY_DIR}"/>
+        <copy file="${DEPLOY_DIR}/${PROG_NAME}" tofile="${WWW_DIR}/${PROG_NAME}" />
+</target>
+</project>
